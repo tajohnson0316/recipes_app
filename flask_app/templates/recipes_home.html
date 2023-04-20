@@ -47,10 +47,13 @@
             <tr>
               <td>{{recipe['name']}}</td>
               <td>{{recipe['under_30']}}</td>
-              <td>{{recipe.user.first_name}}</td>
+              <td>{{recipe.user.first_name}} {{recipe.user.last_name}}</td>
               <td>
                 <div class="d-flex justify-content-center gap-2">
-                  <form action="#" method="POST">
+                  <form
+                    action="/users/{{recipe['id']}}/favorites/add"
+                    method="POST"
+                  >
                     <button
                       type="submit"
                       class="btn btn-link text-success px-0"
@@ -64,7 +67,13 @@
                   </p>
                   {% if recipe['user_id'] == session['user_id'] %}
                   <span class="mt-2"> | </span>
-                  <p class="mt-2"><a href="#" class="link-warning">Edit</a></p>
+                  <p class="mt-2">
+                    <a
+                      href="/recipes/{{recipe['id']}}/edit"
+                      class="link-warning"
+                      >Edit</a
+                    >
+                  </p>
                   <span class="mt-2"> | </span>
                   <form action="/recipes/{{recipe.id}}/delete" method="POST">
                     <button type="submit" class="btn btn-link text-danger px-0">
@@ -96,21 +105,32 @@
             <tr>
               <td>{{recipe['name']}}</td>
               <td>{{recipe['under_30']}}</td>
-              <td>{{recipe.user.first_name}}</td>
+              <td>{{recipe.user.first_name}} {{recipe.user.last_name}}</td>
               <td>
                 <div class="d-flex justify-content-center gap-2">
-                  <p class="mt-2"><a href="#">View</a></p>
-                  <span class="mt-2"> | </span>
-                  <form action="#" method="POST">
+                  <form
+                    action="/users/{{recipe['id']}}/favorites/remove"
+                    method="POST"
+                  >
                     <button type="submit" class="btn btn-link text-light px-0">
                       Remove
                     </button>
                   </form>
-                  {% if recipe['user_id'] == session['user_id'] %}
                   <span class="mt-2"> | </span>
-                  <p class="mt-2"><a href="#" class="link-warning">Edit</a></p>
+                  <p class="mt-2">
+                    <a href="/recipes/{{recipe['id']}}/view">View</a>
+                  </p>
+                  {% if recipe.user_id == session['user_id'] %}
                   <span class="mt-2"> | </span>
-                  <form action="#" method="POST">
+                  <p class="mt-2">
+                    <a
+                      href="/recipes/{{recipe['id']}}/edit"
+                      class="link-warning"
+                      >Edit</a
+                    >
+                  </p>
+                  <span class="mt-2"> | </span>
+                  <form action="/recipes/{{recipe['id']}}/delete" method="POST">
                     <button type="submit" class="btn btn-link text-danger px-0">
                       Delete
                     </button>

@@ -32,7 +32,7 @@ def login():
     if not User.validate_login_email(email):
         return redirect("/")
 
-    user = User.get_one_with_email({"email": email})
+    user = User.get_one_by_email({"email": email})
 
     if not User.validate_password(user.password, request.form["login_password"]):
         return redirect("/")
@@ -55,16 +55,45 @@ def display_homepage():
         return redirect("/")
 
     current_user = User.get_one_with_favorites({"id": session["user_id"]})
+
     list_of_favorites = current_user.list_of_favorites
+
+    for favorite in list_of_favorites:
+        print(f"original favorites: {favorite.name}")
+
     list_of_recipes = Recipe.get_all()
 
     for recipe in list_of_recipes:
-        for favorite in list_of_favorites:
+        print(f"original recipes: {recipe.name}")
+
+    for favorite in list_of_favorites:
+        for recipe in list_of_recipes:
             if recipe.name == favorite.name:
-                list_of_recipes.remove()
+                list_of_recipes.remove(recipe)
+
+    for recipe in list_of_recipes:
+        print(f"updated recipes: {recipe.name}")
 
     return render_template(
         "recipes_home.html",
         current_user=current_user,
         list_of_recipes=list_of_recipes,
     )
+
+
+@app.route("/users/<int:recipe_id>/favorites/add", methods=["POST"])
+def add_to_favorites(recipe_id):
+    User.add_recipe_to_favorites(
+        {"user_id": session["user_id"], "recipe_id": recipe_id}
+    )
+
+    return redirect("/home")
+
+
+@app.route("/users/<int:recipe_id>/favorites/remove", methods=["POST"])
+def remove_from_favorites(recipe_id):
+    User.delete_one_from_favorites(
+        {"user_id": session["user_id"], "recipe_id": recipe_id}
+    )
+
+    return redirect("/home")

@@ -20,9 +20,9 @@
       </div>
       <div class="d-flex justify-content-end fs-4 gap-4">
         <!-- Back to recipes -->
-        <p class="mt-1"><a href="#">Back to recipes</a></p>
+        <p class="mt-1"><a href="/home">Back to recipes</a></p>
         <!-- Log out link -->
-        <form action="#" method="POST">
+        <form action="/logout" method="POST">
           <button type="submit" class="btn btn-link text-danger fs-4 p-0">
             Log out
           </button>
@@ -35,7 +35,10 @@
           class="card-header d-flex justify-content-between align-items-center text-center"
         >
           <h2>{{current_recipe['name']}}</h2>
-          <p class="fs-5">{{current_recipe['owner_name']}}</p>
+          <p class="fs-5">
+            Author: {{current_recipe.user.first_name}}
+            {{current_recipe.user.last_name}}
+          </p>
         </div>
         <div class="card-body fs-4">
           <!-- Description row start -->
@@ -45,13 +48,7 @@
                 <p>Description:</p>
               </div>
               <div class="text-break text-start">
-                <p>
-                  <!--{{current_recipe['description']}}-->
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Maiores quibusdam quia excepturi, nemo illo vitae labore dicta
-                  minus voluptatibus nostrum autem? Labore repellat
-                  necessitatibus nesciunt eum mollitia consequatur ipsam harum!
-                </p>
+                <p>{{current_recipe['description']}}</p>
               </div>
             </div>
           </div>
@@ -95,17 +92,17 @@
                 <p>Favorited by:</p>
               </div>
               <div class="text-break text-start">
-                <p>{{current_recipe['user_favorite']}}</p>
+                <p>
+                  {% for i in range(0, favorites_length) %} {% if i ==
+                  favorites_length - 1 %} {{list_of_favorites[i].first_name}} {%
+                  else %} {{list_of_favorites[i].first_name}}, {% endif %} {%
+                  endfor %}
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="container d-flex justify-content-end">
-      <form action="#" method="POST">
-        <button type="submit" class="btn btn-primary">Add to Favorites</button>
-      </form>
     </div>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"

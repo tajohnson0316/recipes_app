@@ -41,6 +41,24 @@ class User:
 
         return cls(results[0])
 
+    # Get user with email
+    @classmethod
+    def get_one_by_email(cls, data):
+        query = """ 
+        SELECT *
+        FROM users
+        WHERE email = %(email)s;
+        """
+
+        result = connectToMySQL(DATABASE).query_db(query, data)
+
+        if len(result) == 0:
+            return None
+
+        print(f"User info: {result[0]}")
+
+        return cls(result[0])
+
     @classmethod
     def get_one_with_favorites(cls, data):
         query = """ 
@@ -64,41 +82,34 @@ class User:
                     "description": row["description"],
                     "made_on": row["made_on"],
                     "under_30": row["under_30"],
-                    "user_id": row["user_id"],
+                    "user_id": row["r.user_id"],
                     "created_at": row["r.created_at"],
                     "updated_at": row["r.updated_at"],
                 }
-                current_user.list_of_favorites.append(recipe_model.Recipe(new_favorite))
+                recipe = recipe_model.Recipe(new_favorite)
+                recipe.user = cls.get_one({"id": row["r.user_id"]})
+                current_user.list_of_favorites.append(recipe)
         return current_user
-
-    # Get user with email
-    @classmethod
-    def get_one_with_email(cls, data):
-        query = """ 
-        SELECT *
-        FROM users
-        WHERE email = %(email)s;
-        """
-
-        result = connectToMySQL(DATABASE).query_db(query, data)
-
-        if len(result) == 0:
-            return None
-
-        print(f"User info: {result[0]}")
-
-        return cls(result[0])
 
     # Add a recipe to the favorites list
     @classmethod
     def add_recipe_to_favorites(cls, data):
         query = """ 
         INSERT INTO favorites (user_id, recipe_id)
-        VALUES (%(user_id)s, %(user_id)s)
+        VALUES (%(user_id)s, %(recipe_id)s)
         """
 
         new_favorite_id = connectToMySQL(DATABASE).query_db(query, data)
         return new_favorite_id
+
+    @classmethod
+    def delete_one_from_favorites(cls, data):
+        query = """ 
+        DELETE FROM favorites f
+        WHERE f.user_id = %(user_id)s and f.recipe_id = %(recipe_id)s;
+        """
+
+        connectToMySQL(DATABASE).query_db(query, data)
 
     """ --STATIC METHODS-- """
 
@@ -125,7 +136,7 @@ class User:
         if data["confirm_password"] != data["password"]:
             flash("Passwords must match", "error_password")
             is_valid = False
-        if User.get_one_with_email(data) != None:
+        if User.get_one_by_email(data) != None:
             flash("An account already exists with this email", "error_email")
             is_valid = False
         return is_valid
@@ -137,7 +148,7 @@ class User:
         if not EMAIL_REGEX.match(email):
             flash("Please provide a valid email address", "error_login_email")
             is_valid = False
-        elif User.get_one_with_email({"email": email}) == None:
+        elif User.get_one_by_email({"email": email}) == None:
             flash(
                 "No account found. Please check email and try again",
                 "error_login_email",
