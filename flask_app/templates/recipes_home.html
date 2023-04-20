@@ -50,7 +50,18 @@
               <td>{{recipe.user.first_name}}</td>
               <td>
                 <div class="d-flex justify-content-center gap-2">
-                  <p class="mt-2"><a href="#">View</a></p>
+                  <form action="#" method="POST">
+                    <button
+                      type="submit"
+                      class="btn btn-link text-success px-0"
+                    >
+                      Favorite
+                    </button>
+                  </form>
+                  <span class="mt-2"> | </span>
+                  <p class="mt-2">
+                    <a href="/recipes/{{recipe['id']}}/view">View</a>
+                  </p>
                   {% if recipe['user_id'] == session['user_id'] %}
                   <span class="mt-2"> | </span>
                   <p class="mt-2"><a href="#" class="link-warning">Edit</a></p>

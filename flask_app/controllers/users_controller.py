@@ -54,8 +54,17 @@ def display_homepage():
     if not "user_id" in session:
         return redirect("/")
 
+    current_user = User.get_one_with_favorites({"id": session["user_id"]})
+    list_of_favorites = current_user.list_of_favorites
+    list_of_recipes = Recipe.get_all()
+
+    for recipe in list_of_recipes:
+        for favorite in list_of_favorites:
+            if recipe.name == favorite.name:
+                list_of_recipes.remove()
+
     return render_template(
         "recipes_home.html",
-        current_user=User.get_one_with_favorites({"id": session["user_id"]}),
-        list_of_recipes=Recipe.get_all(),
+        current_user=current_user,
+        list_of_recipes=list_of_recipes,
     )
